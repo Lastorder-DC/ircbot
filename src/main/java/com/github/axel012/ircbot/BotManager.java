@@ -121,6 +121,10 @@ public class BotManager extends PircBot {
          return  false;
         }
     }
+    
+    public void sendChat(String chat){
+        sendMessage("#"+this.getCurrentChannel(), chat);
+    }
 
     public   void parseCmd(String cmd,String params,String sender){
         System.out.println(cmd);
