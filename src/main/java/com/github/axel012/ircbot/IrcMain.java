@@ -5,6 +5,26 @@ import com.github.axel012.ircbot.commands.CommandIrcBotStop;
 import com.github.axel012.ircbot.commands.CommandIrcBotToggleChat;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.AsyncPlayerChatEvent;
+import org.bukkit.event.player.PlayerChatTabCompleteEvent;
+
+class GamePlayerChatListener implements Listener {    
+    /**
+     *
+     * @param event
+     */
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onAsyncPlayerChat(AsyncPlayerChatEvent event) {
+        if(!this.isChatEnabled()) return;
+        
+        String name = event.getPlayer().getPlayerListName();
+        String message = event.getMessage();
+        BotManager.getInstance().sendChat("<" + name + "> " + message);
+    }
+}
 
 public final class IrcMain extends JavaPlugin {
     FileConfiguration _config;
@@ -20,7 +40,8 @@ public final class IrcMain extends JavaPlugin {
             System.out.println("Verifing config set");
             verifyConfigSet();
             BotManager.getInstance().setConfig(_config);
-             this.getCommand("start").setExecutor(new CommandIrcBotStart());
+            getServer().getPluginManager().registerEvents(new GamePlayerChatListener(this), this);
+            this.getCommand("start").setExecutor(new CommandIrcBotStart());
             this.getCommand("stop").setExecutor(new CommandIrcBotStop());
             this.getCommand("togglechat").setExecutor(new CommandIrcBotToggleChat());
         }catch (Exception e){
